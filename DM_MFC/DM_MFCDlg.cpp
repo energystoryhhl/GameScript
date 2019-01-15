@@ -1671,7 +1671,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 					Sleep(100);
 					cout << "攻击第一艘小船" << endl;
 					pThis->OnBnClickeAttFirSShip();
-					Sleep(400);
+					Sleep(600);
 				}
 				else if (curBigShipNum != 0)
 				{
@@ -1684,7 +1684,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 					Sleep(100);
 					cout << "攻击第一艘大船" << endl;
 					pThis->OnBnClickeAttFirBShip();
-					Sleep(400);
+					Sleep(600);
 					//开启大船攻击计时
 					BShipStartAttackTimer = CTime::GetCurrentTime();
 					BShipAttackTime = BShipStartAttackTimer.GetTime();
