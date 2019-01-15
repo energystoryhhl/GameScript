@@ -396,13 +396,12 @@ int DMFindListLockSingle(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, in
 }
 
 //long FindPic(x1, y1, x2, y2, pic_name, delta_color,sim, dir,intX, intY)
-int DMFindPicRow(Cdmsoft &dm, VARIANT &x, VARIANT &y, char *pic_name,  int offset ,int x1, int y1 , int x2 , int y2 )
+int DMFindPicRow(Cdmsoft &dm, VARIANT &x, VARIANT &y, char *pic_name, int offset, int sim , char * color , int x1 , int y1 , int x2 , int y2 )
 {
 	int i = 0;
-	while (dm.FindPic(x1, y1, x2, y2, pic_name, "202020", 0.95, 0,&x, &y) != -1)
+	while (dm.FindPic(x1, y1, x2, y2, pic_name, color, sim, 0,&x, &y) != -1)
 	{
 		i++;
-		
 		x1 = x.intVal + offset;
 		
 	}

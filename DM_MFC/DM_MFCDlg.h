@@ -80,11 +80,13 @@ private:
 	int m_curSShipNum;
 	int m_curBShipNum;
 	bool m_ShipNumCountThreadEnable;
-
+	bool m_WrapDetectThreadEnable;
+	bool m_IfWrapON;
 	bool m_script3Enable;
 
 	friend UINT ShipCoutThread(LPVOID pParam);
 	friend UINT SCRIPT3THREAD(LPVOID pParam);
+	friend UINT WrapDetectThread(LPVOID pParam);
 
 	//--------------------------------	CONTROL MEMBERS--------------------------
 	//
@@ -127,4 +129,5 @@ public:
 	afx_msg void RELEASEALLDRON();
 	CButton m_btn_init;
 	CButton m_btn_script3;
+	afx_msg void IFONWRAP();
 };

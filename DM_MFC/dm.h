@@ -87,7 +87,7 @@ int DMFoorBarClose(Cdmsoft &dm, vector<long> &vHwnd);
 
 //横向扫描  屏幕 从列的方向 寻找图片
 //
-int DMFindPicRow(Cdmsoft &dm, VARIANT &x, VARIANT &y, char *pic_name, int offset, int x1 = 0, int y1 = 0, int x2 = 1920, int y2 = 1080);
+int DMFindPicRow(Cdmsoft &dm, VARIANT &x, VARIANT &y, char *pic_name, int offset, int sim = 0.95, char * color = "202020",int x1 = 0, int y1 = 0, int x2 = 1920, int y2 = 1080);
 
 //竖向扫描  屏幕 从列的方向 寻找图片
 //
