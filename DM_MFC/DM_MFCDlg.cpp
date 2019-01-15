@@ -150,6 +150,7 @@ BEGIN_MESSAGE_MAP(CDM_MFCDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON22, &CDM_MFCDlg::IFMissleEmpty)
 	ON_BN_CLICKED(IDC_BUTTON23, &CDM_MFCDlg::CALLBACKALLDRON)
 	ON_BN_CLICKED(IDC_BUTTON24, &CDM_MFCDlg::RELEASEALLDRON)
+	ON_BN_CLICKED(IDC_BUTTON25, &CDM_MFCDlg::StartWrapDtectThread)
 END_MESSAGE_MAP()
 
 
@@ -914,9 +915,12 @@ void CDM_MFCDlg::OnCbnSelchangeComboMode2()
 	int sel = m_mode2.GetCurSel();
 	switch (sel)
 	{
-	case 0: m_mode2_cstr = "normal";	break;
-	case 1: m_mode2_cstr = "windows"; break;
-	default: m_mode2_cstr = "windows"; break;
+	case 0: m_mode2_cstr = "normal";		break;
+	case 1: m_mode2_cstr = "windows";		break;
+	case 2: m_mode2_cstr = "dx";			break;
+	case 3: m_mode2_cstr = "dx2";			break;
+	case 4: m_mode2_cstr = "windows3";		break;
+	default: m_mode2_cstr = "windows";		break;
 	}
 
 	m_lsb_msg.AddString("Mode2 choice: " + m_mode2_cstr);
@@ -934,7 +938,7 @@ void CDM_MFCDlg::InitializeControls(void)
 	m_cbb_mode.SetCurSel(2);
 	OnCbnSelchangeComboMode();
 
-	CString mode2[] = { "normal","windows"};
+	CString mode2[] = { "normal","windows","dx","dx2","windows3"};
 	num = sizeof(mode2) / sizeof(CString);
 	for (int i = 0; i < num; i++)
 	{
@@ -1441,7 +1445,7 @@ UINT ShipCoutThread(LPVOID pParam)
 				pastSmallShipNum = curSmallShipNum;
 				pThis->m_curSShipNum = curSmallShipNum;
 				changeFlag = 0;
-				cout << "！！！！小船数量改变 数量为 ！！！！" << pThis->m_curSShipNum << endl;
+				//cout << "！！！！小船数量改变 数量为 ！！！！" << pThis->m_curSShipNum << endl;
 			}
 		}
 		if (pastBigShipNum != curBigShipNum)
@@ -1452,10 +1456,10 @@ UINT ShipCoutThread(LPVOID pParam)
 				pastBigShipNum = curBigShipNum;
 				pThis->m_curBShipNum = curBigShipNum;
 				changeFlag = 0;
-				cout << "！！！！大船数量改变 数量为！！！！ " << pThis->m_curBShipNum << endl;
+				//cout << "！！！！大船数量改变 数量为！！！！ " << pThis->m_curBShipNum << endl;
 			}
 		}
-		Sleep(50);
+		//Sleep(50);
 	}
 	cout << "船数量计数线程已退出" << endl;
 	return 0;
@@ -1512,7 +1516,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	bool onFire = false;
 	int reLoadFlag = 0;
 
-	long BShipAttOutTime = 13;
+	long BShipAttOutTime = 10;
 	CTime BShipStartAttackTimer;
 	long BShipAttackTime;
 	CTime ReLoadTimer;
@@ -1540,62 +1544,78 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 		
 		//----------------环绕判断----------------
 		//
-		if ((curBigShipNum != 0) || (0 != curSmallShipNum))
+		//if ((curBigShipNum != 0) || (0 != curSmallShipNum))
+		//{
+		//	if (onFire == false)
+		//	{
+		//		cout << ">>> <环绕判断> NOT ON FIRE!" << endl;
+		//		if (0 != curSmallShipNum)
+		//		{
+		//			cout << "<环绕> 第1 <小艘>" << endl;
+		//			pThis->OnBnClickeRoundFirShip();
+		//		}
+		//		else if (0 != curBigShipNum)
+		//		{
+		//			cout << "<环绕> 第1 <大艘>" << endl;
+		//			pThis->OnBnClickeRoundFirBShip();
+		//		}
+		//	}
+		//}
+
+
+		//---------------------跃迁检测---------------------------
+		if (pThis->m_IfWrapON == true)
 		{
-			if (onFire == false)
+			cout << "-------------------ON WRAP！--------------" << endl;
+			while (pThis->m_IfWrapON == true)
 			{
-				cout << ">>> <环绕判断> NOT ON FIRE!" << endl;
-				if (0 != curSmallShipNum)
-				{
-					cout << "<环绕> 第1 <小艘>" << endl;
-					pThis->OnBnClickeRoundFirShip();
-				}
-				else if (0 != curBigShipNum)
-				{
-					cout << "<环绕> 第1 <大艘>" << endl;
-					pThis->OnBnClickeRoundFirBShip();
-				}
+				cout << "-------------------ON WRAP！--------------" << endl;
+				Sleep(4000);
 			}
+			cout << "按下F4 启动感应增强脚本" << endl;
+			pThis->m_pdm->KeyPress(115);
 		}
 
-		//船的数量发生改变时 则重新扫描所有船数量3次 防止遗漏小船
+
+		//船的数量发生改变时 则重新扫描所有船数量2次 防止遗漏小船
 		//如果船只增加 
 		//
 		if(curSmallShipNum > pastSmallShipNum)
 		{
 			SmallShipLocked = false;
-			/*			cout << " <小船>数量变多 延时一秒 进行 重新扫描 " << endl;
-			Sleep(1000);
-			if (reLoadFlag == 0)
+			//船的数量增加 先环绕两次 再刷新 数量 以防 后续错误判断
+			for (int i = 0; i < 2; i++)
 			{
-				reLoadFlag++;
-				continue;
-			}*/
-
+				pThis->OnBnClickeRoundFirShip();
+				Sleep(800);
+			}
+			curSmallShipNum = pThis->m_curSShipNum;
+			curBigShipNum = pThis->m_curBShipNum;
 		}
 		if (curBigShipNum > pastBigShipNum)
 		{
 			BigShipLocked = false;
-			/*			cout << " <大船船>数量变多 延时一秒 进行 重新扫描 " << endl;
-			Sleep(1000);
-			if (reLoadFlag == 0)
+			//船的数量增加 先环绕两次 再刷新 数量 以防 后续错误判断
+			for (int i = 0; i < 2; i++)
 			{
-				reLoadFlag++;
-				continue;
-			}*/
+				pThis->OnBnClickeRoundFirBShip();
+				Sleep(800);
+			}
+			curSmallShipNum = pThis->m_curSShipNum;
+			curBigShipNum = pThis->m_curBShipNum;
 
 		}
 		if (curSmallShipNum < pastSmallShipNum)
 		{
 			ifAttack = false;
-			reLoadFlag = 0;
+
 		}
 		if (curBigShipNum < pastBigShipNum)
 		{
-			cout << "<大船>减少 延时 3秒" << endl;
+			cout << "<大船>减少 延时2秒" << endl;
 			ifAttack = false;
 			reLoadFlag = 0;
-			Sleep(3000);
+			Sleep(2000);
 		}
 
 		
@@ -1662,6 +1682,13 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 				onFire = false;
 				if (curSmallShipNum != 0)
 				{
+					//如果是由于打掉了一艘船导致的攻击失效则 
+					//if (pThis->m_curSShipNum < curSmallShipNum)
+					//{
+					//	cout << "//----------小船 由于 攻击减少 环绕第一艘小船" << endl;
+					//	pThis->OnBnClickeRoundFirShip();
+					//	continue;
+					//}
 					cout << ">>>小船不为0" << endl;
 					cout << "环绕第一艘小船" << endl;
 					pThis->OnBnClickeRoundFirShip();
@@ -1675,7 +1702,13 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 				}
 				else if (curBigShipNum != 0)
 				{
-					
+					//如果是由于打掉了一艘船导致的攻击失效则 
+					//if (pThis->m_curBShipNum < curBigShipNum)
+					//{
+					//	cout << "//----------大船 由于 攻击减少 环绕第一艘大船" << endl;
+					//	pThis->OnBnClickeRoundFirBShip();
+					//	continue;
+					//}
 					cout << "环绕第一艘大船" << endl;
 					pThis->OnBnClickeRoundFirBShip();
 					Sleep(100);
@@ -1734,7 +1767,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			cout << "pass time: " << passtime << endl;;
 			Sleep(800);
 			//system("cls");
-			if ((passtime > BShipAttOutTime) )
+			if ((passtime >=a BShipAttOutTime) )
 			{
 				cout << "大船攻击超时 启动导弹" << endl;
 				pThis->m_pdm->KeyPress(114);
@@ -1795,6 +1828,20 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			Sleep(20*1000);
 		}
 
+		//-------------------------舰载机 就绪 判断------------------
+		//在有目标的时候才会判断
+		if ((onFire == false) && (0 != curSmallShipNum || 0 != curBigShipNum))
+		{
+			if (pThis->m_pdm->FindPic(0, 0, 1920, 1080, "DroneReady.bmp", "202020", 0.8, 0, &attack_x, &attack_y) != -1)
+			{
+				cout << "检测到无人机就绪 且存在敌人" << endl;
+				cout << "释放所有铁JJ" << endl;
+				pThis->RELEASEALLDRON();
+				Sleep(300);
+				pThis->m_pdm->KeyPress(113);
+			}
+		}
+
 		//计数
 		pastBigShipNum = curBigShipNum;
 		pastSmallShipNum = curSmallShipNum;
@@ -1819,20 +1866,26 @@ void CDM_MFCDlg::SCRIPT3()
 		//开启 船数量检测线程
 		//
 		m_lsb_msg.AddString(">>>开启舰船数量检测线程");
+		m_lsb_msg.AddString(">>>开启跃迁检测线程");
 		m_lsb_msg.AddString(">>>开启脚本");
 		if (m_ShipNumCountThreadEnable == false)
 			this->StartShipNumDectThread();
+		//if (m_WrapDetectThreadEnable == false)
+			//this->StartWrapDtectThread();
+
 		Sleep(2000);
 		m_script3Enable = true;
-		
 		AfxBeginThread(SCRIPT3THREAD, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
 		
 	}
 	else 
 	{
 		m_script3Enable = false;
+		m_WrapDetectThreadEnable = false;
 		m_ShipNumCountThreadEnable = false;
+		
 		m_lsb_msg.AddString(">>>关闭舰船数量检测线程");
+		m_lsb_msg.AddString(">>>关闭跃迁检测线程");
 		m_lsb_msg.AddString(">>>关闭脚本");
 	}
 	CheckRun();
@@ -1916,4 +1969,49 @@ void CDM_MFCDlg::RELEASEALLDRON()
 	m_pdm->KeyPressChar("p");
 	Sleep(delaytime);
 	m_pdm->KeyPressChar("p");
+}
+
+UINT WrapDetectThread(LPVOID pParam)
+{
+	CDM_MFCDlg * pThis = (CDM_MFCDlg *)pParam;
+	int wrapOnFlag = 0;
+	int wrapOnFlagNum = 2;
+	VARIANT x, y;
+	while (pThis->m_WrapDetectThreadEnable)
+	{
+		if (pThis->m_pdm->FindStrFast(0, 0, 1920, 1080, "跃迁", "c3c3c3-606060", 0.75, &x, &y) != -1)
+		{
+			wrapOnFlag++;
+			//pThis->m_IfWrapON = true;
+		}
+		else
+		{
+			pThis->m_IfWrapON = false;
+			//cout << "-----------------WRAP OFF-----------------" << endl;
+		}
+		if (wrapOnFlag >= wrapOnFlagNum)
+		{
+			pThis->m_IfWrapON = true;
+			//cout << "-----------------WRAP ON-----------------" << endl;
+			wrapOnFlag = 0;
+		}
+	}
+	return 0;
+}
+
+void CDM_MFCDlg::StartWrapDtectThread()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	if (m_WrapDetectThreadEnable == false)
+	{
+		cout << "跃迁检测线程开启" << endl;
+		m_WrapDetectThreadEnable = true;
+		AfxBeginThread(WrapDetectThread, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+
+	}
+	else
+	{
+		m_WrapDetectThreadEnable = false;
+		cout << "跃迁检测线程关闭" << endl;
+	}
 }

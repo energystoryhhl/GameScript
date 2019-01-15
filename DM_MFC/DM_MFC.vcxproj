@@ -23,7 +23,7 @@
     <RootNamespace>DM_MFC</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
     <Keyword>MFCProj</Keyword>
-    <ProjectName>DM_MFC_0.1</ProjectName>
+    <ProjectName>DM_MFC_0.3</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
