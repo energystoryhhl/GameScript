@@ -1767,7 +1767,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			cout << "pass time: " << passtime << endl;;
 			Sleep(800);
 			//system("cls");
-			if ((passtime >=a BShipAttOutTime) )
+			if ((passtime >= BShipAttOutTime) )
 			{
 				cout << "大船攻击超时 启动导弹" << endl;
 				pThis->m_pdm->KeyPress(114);
