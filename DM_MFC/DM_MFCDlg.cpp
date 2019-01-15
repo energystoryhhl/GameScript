@@ -1624,6 +1624,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 		if(curSmallShipNum > pastSmallShipNum)
 		{
 			SmallShipLocked = false;
+			//船的数量增加 先环绕两次 再刷新 数量 以防 后续错误判断
 			for (int i = 0; i < 2; i++)
 			{
 				pThis->OnBnClickeRoundFirShip();
@@ -1635,6 +1636,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 		if (curBigShipNum > pastBigShipNum)
 		{
 			BigShipLocked = false;
+			//船的数量增加 先环绕两次 再刷新 数量 以防 后续错误判断
 			for (int i = 0; i < 2; i++)
 			{
 				pThis->OnBnClickeRoundFirBShip();
@@ -1650,10 +1652,10 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 		}
 		if (curBigShipNum < pastBigShipNum)
 		{
-			cout << "<大船>减少 延时 3秒" << endl;
+			cout << "<大船减少 延时 2秒" << endl;
 			ifAttack = false;
 			reLoadFlag = 0;
-			Sleep(3000);
+			Sleep(2000);
 		}
 
 		//----------攻击判断-----------------
