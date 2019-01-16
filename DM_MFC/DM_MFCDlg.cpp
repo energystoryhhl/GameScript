@@ -1159,7 +1159,7 @@ void CDM_MFCDlg::OnBnClickeLockBigShip()
 	//int ret = 0;
 
 	//锁定所有小船
-	DMFindListLock(*m_pdm, m_scanPoint_x, m_scanPoint_y, "科波斯", 120,
+	DMFindListLock(*m_pdm, m_scanPoint_x, m_scanPoint_y, "科波斯|黑暗", 120,
 		m_scanPoint_x.intVal - 10, m_scanPoint_y.intVal, m_scanPoint_x.intVal + 145, 1080, 16);
 }
 
@@ -1203,7 +1203,7 @@ void CDM_MFCDlg::OnBnClickeAttFirBShip()
 		return;
 	}
 	//攻击第一个大船
-	DMFindListAttackBig(*m_pdm, m_scanPoint_x, m_scanPoint_y, "科波斯", 80,
+	DMFindListAttackBig(*m_pdm, m_scanPoint_x, m_scanPoint_y, "科波斯|黑暗", 80,
 		m_scanPoint_x.intVal - 10, m_scanPoint_y.intVal, m_scanPoint_x.intVal + 145, 1080, 16);
 }
 
@@ -1216,7 +1216,7 @@ void CDM_MFCDlg::OnBnClickeRoundSecBShip()
 		return;
 	}
 	//环绕第二个大船
-	DMFindListRound(*m_pdm, m_scanPoint_x, m_scanPoint_y, "科波斯", 80,
+	DMFindListRound(*m_pdm, m_scanPoint_x, m_scanPoint_y, "科波斯|黑暗", 80,
 		m_scanPoint_x.intVal - 10, m_scanPoint_y.intVal, m_scanPoint_x.intVal + 145, 1080, 16);
 }
 
@@ -1229,7 +1229,7 @@ void CDM_MFCDlg::OnBnClickeRoundFirBShip()
 		return;
 	}
 	//环绕第一个大船
-	DMFindListRound(*m_pdm, m_scanPoint_x, m_scanPoint_y, "科波斯", 100,
+	DMFindListRound(*m_pdm, m_scanPoint_x, m_scanPoint_y, "科波斯|黑暗", 100,
 		m_scanPoint_x.intVal - 10, m_scanPoint_y.intVal, m_scanPoint_x.intVal + 145, 1080, 16,70,0);
 }
 
@@ -1430,7 +1430,7 @@ UINT ShipCoutThread(LPVOID pParam)
 
 		//cout << "当前小船数量: " << pThis->m_curSShipNum << endl;
 
-		curBigShipNum = DMFindListCount(*pThis->m_pdmCounter, pThis->m_scanPoint_x, pThis->m_scanPoint_y, "科波斯",
+		curBigShipNum = DMFindListCount(*pThis->m_pdmCounter, pThis->m_scanPoint_x, pThis->m_scanPoint_y, "科波斯|黑暗",
 			pThis->m_scanPoint_x.intVal - 10, pThis->m_scanPoint_y.intVal, pThis->m_scanPoint_x.intVal + 145, 1080, 16);
 
 		//cout << "当前大船数量: " << pThis->m_curBShipNum << endl;
@@ -1587,7 +1587,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			for (int i = 0; i < 2; i++)
 			{
 				pThis->OnBnClickeRoundFirShip();
-				Sleep(800);
+				Sleep(400);
 			}
 			curSmallShipNum = pThis->m_curSShipNum;
 			curBigShipNum = pThis->m_curBShipNum;
@@ -1599,7 +1599,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			for (int i = 0; i < 2; i++)
 			{
 				pThis->OnBnClickeRoundFirBShip();
-				Sleep(800);
+				Sleep(400);
 			}
 			curSmallShipNum = pThis->m_curSShipNum;
 			curBigShipNum = pThis->m_curBShipNum;
@@ -1921,7 +1921,7 @@ void CDM_MFCDlg::LockFirBShip()
 	//int ret = 0;
 
 	//锁定第一个大船
-	DMFindListLockSingle(*m_pdm, m_scanPoint_x, m_scanPoint_y, "科波斯", 100,
+	DMFindListLockSingle(*m_pdm, m_scanPoint_x, m_scanPoint_y, "科波斯|黑暗", 100,
 		m_scanPoint_x.intVal - 10, m_scanPoint_y.intVal, m_scanPoint_x.intVal + 145, 1080, 16, 70, 0);
 }
 

@@ -6,9 +6,10 @@
 using namespace std;
 
 
-#define DM_DEBUG_BIAS_X 60
-#define DM_DEBUG_BIAS_Y -20 
-#define CTRLPRESSTIME 300
+#define DM_DEBUG_BIAS_X		60
+#define DM_DEBUG_BIAS_Y		-20 
+#define CTRLPRESSTIME		300
+#define CLICKBIAS			30
 //#define DM_DEBUG
 //#define DM_DEBUG_BIAS_Y 10 
 struct OverViewElement {
@@ -18,7 +19,9 @@ struct OverViewElement {
 	unsigned int type;
 };
 
-struct 
+
+
+
 
 
 //UINT DMRegister(char * DMDir);
@@ -53,25 +56,25 @@ int DMFindListCount(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int x1,
 
 //找列表 并且锁定全部
 //
-int DMFindListLock(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = 70);
+int DMFindListLock(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = CLICKBIAS);
 
 //找列表并且解除锁定
 //
-int DMFindListUnLock(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = 70);
+int DMFindListUnLock(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = CLICKBIAS);
 
 //找列表并且默认攻击第一个
 //
-int DMFindListAttack(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = 70, int attackObj = 0);
+int DMFindListAttack(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = CLICKBIAS, int attackObj = 0);
 
 //大船！找列表 并且默认攻击第一个
 //
-int DMFindListAttackBig(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = 70, int  attackObj = 0);
+int DMFindListAttackBig(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = CLICKBIAS, int  attackObj = 0);
 //找列表并且默认环绕第二个
 //
-int DMFindListRound(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = 70, int attackObj = 1);
+int DMFindListRound(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = CLICKBIAS, int attackObj = 1);
 
 //找列表 并且默认锁定第一个
-int DMFindListLockSingle(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = 70, int attackObj = 0);
+int DMFindListLockSingle(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = CLICKBIAS, int attackObj = 0);
 
 //单击
 //
