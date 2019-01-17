@@ -10,6 +10,15 @@ using namespace std;
 #define DM_DEBUG_BIAS_Y		-20 
 #define CTRLPRESSTIME		300
 #define CLICKBIAS			30
+#define XRANDONVAL			20
+#define XRANDONBIASVAL		10
+#define YRANDVAL			10
+#define YRANDBIASVAL		5
+#define XRAND			(rand()%XRANDONVAL - XRANDONBIASVAL)
+#define YRAND			(rand()%YRANDVAL   - YRANDBIASVAL)
+
+//X轴随机：-10 到 10
+//Y轴随机： -5 到 5
 //#define DM_DEBUG
 //#define DM_DEBUG_BIAS_Y 10 
 struct OverViewElement {

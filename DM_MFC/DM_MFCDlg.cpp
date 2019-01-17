@@ -1517,8 +1517,17 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	int reLoadFlag = 0;
 
 	long BShipAttOutTime = 10;
+	long SShipAttOutTime = 8;
 	CTime BShipStartAttackTimer;
 	long BShipAttackTime;
+	//初始化 时间 防止发生异常
+	BShipStartAttackTimer = CTime::GetCurrentTime();
+	BShipAttackTime = BShipStartAttackTimer.GetTime();
+	CTime SShipStartAttackTimer;
+	long SShipAttackTime;
+	//初始化 时间 防止发生异常
+	SShipStartAttackTimer = CTime::GetCurrentTime();
+	SShipAttackTime = SShipStartAttackTimer.GetTime();
 	CTime ReLoadTimer;
 	long ReLoadTime = 70;
 
@@ -1698,6 +1707,9 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 					Sleep(100);
 					cout << "攻击第一艘小船" << endl;
 					pThis->OnBnClickeAttFirSShip();
+					//开启小船攻击计时
+					SShipStartAttackTimer = CTime::GetCurrentTime();
+					SShipAttackTime = SShipStartAttackTimer.GetTime();
 					Sleep(800);
 				}
 				else if (curBigShipNum != 0)
@@ -1792,7 +1804,43 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			}
 			*/
 		}
-
+		//------------小船攻击计时判断--------------
+		if ((curSmallShipNum != 0) && (ifAttack == true) )
+		{
+			Curtimer = CTime::GetCurrentTime();
+			long ctime = Curtimer.GetTime();
+			long passtime;
+			passtime = (ctime - SShipAttackTime);
+			//获取时间
+			//等待消灭大船
+			cout << "Small pass time: " << passtime << endl;;
+			Sleep(400);
+			//system("cls");
+			if ((passtime >= SShipAttOutTime))
+			{
+				cout << "小船攻击超时 " << endl;
+				Sleep(100);
+				cout << "锁定第一艘小船" << endl;
+				pThis->LockFirSShip();
+				Sleep(100);
+				cout << "攻击第一艘小船" << endl;
+				pThis->OnBnClickeAttFirSShip();
+				Sleep(100);
+			}
+			/*
+			VARIANT x_pic, y_pic;
+			if (pThis->m_pdm->FindPic(0, 0, 1920, 1080, "missleEmpty.bmp", "202020", 0.95, 0, &x_pic, &x_pic) != -1) //"F1_2.bmp"
+			{
+			ifMissleEmpty = true;
+			cout << "/---------MISSSLE EMPTY------------/" << endl;
+			}
+			if (pThis->m_pdm->FindPic(0, 0, 1920, 1080, "F1_2.bmp", "202020", 0.95, 0, &x_pic, &x_pic) != -1) //"F1_2.bmp"
+			{
+			//ifMissleEmpty = true;
+			cout << "/---------NOT ON FIRE!------------/" << endl;
+			}
+			*/
+		}
 		//----------------导弹数量检测-----------------------
 		//
 		if (DMFindPicRow(*pThis->m_pdm, attack_x, attack_y, "missleEmpty.bmp", 20, 0, 0, 1920, 1080) >= 2)
