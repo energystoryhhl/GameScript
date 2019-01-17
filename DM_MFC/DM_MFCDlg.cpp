@@ -1698,7 +1698,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 					Sleep(100);
 					cout << "攻击第一艘小船" << endl;
 					pThis->OnBnClickeAttFirSShip();
-					Sleep(600);
+					Sleep(800);
 				}
 				else if (curBigShipNum != 0)
 				{
@@ -1712,6 +1712,11 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 					cout << "环绕第一艘大船" << endl;
 					pThis->OnBnClickeRoundFirBShip();
 					Sleep(100);
+					if (pThis->m_curSShipNum != 0)
+					{
+						cout << "当前小船不为0 回滚！" << endl;
+						continue;
+					}
 					cout << "锁定第一艘大船" << endl;
 					pThis->LockFirBShip();
 					Sleep(100);
