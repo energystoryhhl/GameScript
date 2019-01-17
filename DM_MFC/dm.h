@@ -16,6 +16,8 @@ using namespace std;
 #define YRANDBIASVAL		5
 #define XRAND			(rand()%XRANDONVAL - XRANDONBIASVAL)
 #define YRAND			(rand()%YRANDVAL   - YRANDBIASVAL)
+//#define ROUND_TEST
+
 
 //X轴随机：-10 到 10
 //Y轴随机： -5 到 5

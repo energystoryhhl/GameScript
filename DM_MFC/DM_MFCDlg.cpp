@@ -1531,6 +1531,9 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	CTime ReLoadTimer;
 	long ReLoadTime = 70;
 
+	long BShipRoundSecTime = 8;
+	long SShipRoundSecTime = 3;
+
 	CTime Curtimer;
 
 	VARIANT attack_x, attack_y;
@@ -1782,10 +1785,20 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			//获取时间
 			//等待消灭大船
 			cout << "pass time: " << passtime << endl;;
-			Sleep(800);
+			Sleep(500);
 			//system("cls");
+#ifdef ROUND_TEST
+			if ((passtime == BShipRoundSecTime))
+			{
+				cout << "//================！！！环绕判定！！！" << endl;
+				cout << "环绕第二艘大船！" << endl;
+
+				pThis->OnBnClickeRoundSecBShip();
+			}
+#endif
 			if ((passtime >= BShipAttOutTime) )
 			{
+				
 				cout << "大船攻击超时 启动导弹" << endl;
 				pThis->m_pdm->KeyPress(114);
 				Sleep(800);
@@ -1816,6 +1829,22 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			cout << "Small pass time: " << passtime << endl;;
 			Sleep(400);
 			//system("cls");
+#ifdef ROUND_TEST
+			if ((passtime == SShipRoundSecTime))
+			{
+				cout << "//================！！！环绕判定！！！" << endl;
+				if (curSmallShipNum >= 2)
+				{
+					cout << "环绕第二艘小船！" << endl;
+					pThis->OnBnClickeRoundSecShip();
+				}
+				else
+				{
+					cout << "环绕第1艘大船！" << endl;
+					pThis->OnBnClickeRoundFirBShip();
+				}
+			}
+#endif
 			if ((passtime >= SShipAttOutTime))
 			{
 				cout << "小船攻击超时 " << endl;
@@ -1878,7 +1907,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			pThis->CALLBACKALLDRON();
 			Sleep(800);
 			pThis->m_pdm->KeyPress(113);
-			Sleep(20*1000);
+			Sleep(10*1000);
 		}
 
 		//-------------------------舰载机 就绪 判断------------------
@@ -1890,7 +1919,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 				cout << "检测到无人机就绪 且存在敌人" << endl;
 				cout << "释放所有铁JJ" << endl;
 				pThis->RELEASEALLDRON();
-				Sleep(300);
+				Sleep(800);
 				pThis->m_pdm->KeyPress(113);
 			}
 		}
