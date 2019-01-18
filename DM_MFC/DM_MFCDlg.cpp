@@ -1619,12 +1619,14 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 		}
 		if (curSmallShipNum < pastSmallShipNum)
 		{
+			pThis->OnBnClickeRoundFirShip();
 			ifAttack = false;
 
 		}
 		if (curBigShipNum < pastBigShipNum)
 		{
 			cout << "<¥Û¥¨>ºı…Ÿ —” ±2√Î" << endl;
+			pThis->OnBnClickeRoundFirBShip();
 			ifAttack = false;
 			reLoadFlag = 0;
 			Sleep(2000);
