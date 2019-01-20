@@ -1018,8 +1018,8 @@ void CDM_MFCDlg::OnBnClickedButtonInit()
 	Sleep(200);
 	//绑定
 	char *mode = "windows";
-	//if (0 == (m_pdm->BindWindow(hwnd, m_mode.GetBuffer(0), mode, mode, 0))
-	//	|| 0 == (m_pdmCounter->BindWindow(hwnd, m_mode.GetBuffer(0), mode, mode, 0)))
+	//if (0 == (m_pdm->BindWindow(hwnd, m_mode.GetBuffer(0), m_mode2_cstr.GetBuffer(0), m_mode2_cstr.GetBuffer(0), 0))
+	//		|| 0 == (m_pdmCounter->BindWindow(hwnd, m_mode.GetBuffer(0), m_mode2_cstr.GetBuffer(0), m_mode2_cstr.GetBuffer(0), 0)))
 	if (0 == (m_pdm->BindWindow(hwnd, m_mode.GetBuffer(0), m_mode2_cstr.GetBuffer(0), m_mode2_cstr.GetBuffer(0), 0))
 		|| 0 == (m_pdmCounter->BindWindow(hwnd, m_mode.GetBuffer(0), m_mode2_cstr.GetBuffer(0), m_mode2_cstr.GetBuffer(0), 0)))
 	{
@@ -1422,7 +1422,7 @@ UINT ShipCoutThread(LPVOID pParam)
 	int curSmallShipNum = 0;
 	int curBigShipNum = 0;
 	int changeFlag = 0;
-	int changNum = 2;		//改变两次以上 就更新值
+	int changNum = 3;		//改变两次以上 就更新值
 	while (pThis->m_ShipNumCountThreadEnable)
 	{
 		curSmallShipNum = DMFindListCount(*pThis->m_pdmCounter, pThis->m_scanPoint_x, pThis->m_scanPoint_y,"科波姆|科必伊|科帕",
@@ -1516,7 +1516,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	bool onFire = false;
 	int reLoadFlag = 0;
 
-	long BShipAttOutTime = 10;
+	long BShipAttOutTime = 8;
 	long SShipAttOutTime = 8;
 	CTime BShipStartAttackTimer;
 	long BShipAttackTime;
@@ -1547,6 +1547,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	//
 	CDM_MFCDlg * pThis = (CDM_MFCDlg *)pParam;
 	cout << "脚本3已经启动" << endl;
+	Sleep(2000);
 	while (pThis->m_script3Enable)
 	{
 		//获取当前船只数量
@@ -1896,7 +1897,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 				//Sleep(100*1000);
 				cout << "释放所有铁骑！" << endl;
 				pThis->RELEASEALLDRON();
-				Sleep(1500);
+				Sleep(2000);
 				pThis->m_pdm->KeyPress(113);
 			}
 			//Sleep();
@@ -1957,7 +1958,7 @@ void CDM_MFCDlg::SCRIPT3()
 		//if (m_WrapDetectThreadEnable == false)
 			//this->StartWrapDtectThread();
 
-		Sleep(2000);
+		//Sleep(2000);
 		m_script3Enable = true;
 		AfxBeginThread(SCRIPT3THREAD, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
 		
