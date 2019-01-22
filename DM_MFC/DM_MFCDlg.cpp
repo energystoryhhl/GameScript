@@ -1422,21 +1422,15 @@ UINT ShipCoutThread(LPVOID pParam)
 	int curSmallShipNum = 0;
 	int curBigShipNum = 0;
 	int changeFlag = 0;
-	int changNum = 3;		//改变两次以上 就更新值
+	int changNum = 2;		//改变两次以上 就更新值
 	while (pThis->m_ShipNumCountThreadEnable)
 	{
 		curSmallShipNum = DMFindListCount(*pThis->m_pdmCounter, pThis->m_scanPoint_x, pThis->m_scanPoint_y,"科波姆|科必伊|科帕",
 			pThis->m_scanPoint_x.intVal - 10, pThis->m_scanPoint_y.intVal, pThis->m_scanPoint_x.intVal + 145, 1080, 16);
 
-		//cout << "当前小船数量: " << pThis->m_curSShipNum << endl;
-
 		curBigShipNum = DMFindListCount(*pThis->m_pdmCounter, pThis->m_scanPoint_x, pThis->m_scanPoint_y, "科波斯|黑暗",
 			pThis->m_scanPoint_x.intVal - 10, pThis->m_scanPoint_y.intVal, pThis->m_scanPoint_x.intVal + 145, 1080, 16);
 
-		//cout << "当前大船数量: " << pThis->m_curBShipNum << endl;
-		//cout << "------------------ "  << endl;
-		//滤波算法
-		//
 		if (pastSmallShipNum != curSmallShipNum)
 		{
 			changeFlag++;
@@ -1445,7 +1439,7 @@ UINT ShipCoutThread(LPVOID pParam)
 				pastSmallShipNum = curSmallShipNum;
 				pThis->m_curSShipNum = curSmallShipNum;
 				changeFlag = 0;
-				//cout << "！！！！小船数量改变 数量为 ！！！！" << pThis->m_curSShipNum << endl;
+				cout << "//---------------小船数量改变 数量为 :" << pThis->m_curSShipNum << endl;
 			}
 		}
 		if (pastBigShipNum != curBigShipNum)
@@ -1456,7 +1450,7 @@ UINT ShipCoutThread(LPVOID pParam)
 				pastBigShipNum = curBigShipNum;
 				pThis->m_curBShipNum = curBigShipNum;
 				changeFlag = 0;
-				//cout << "！！！！大船数量改变 数量为！！！！ " << pThis->m_curBShipNum << endl;
+				cout << "//---------------大船数量改变 数量为:" << pThis->m_curBShipNum << endl;
 			}
 		}
 		//Sleep(50);
@@ -1528,14 +1522,22 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	//初始化 时间 防止发生异常
 	SShipStartAttackTimer = CTime::GetCurrentTime();
 	SShipAttackTime = SShipStartAttackTimer.GetTime();
+	//
+	CTime noTargetTimer;
+	long noTargetTime;
+	bool noTargetTimerEnable = false;
+	noTargetTimer = CTime::GetCurrentTime();
+	noTargetTime = noTargetTimer.GetTime();
+
 	CTime ReLoadTimer;
 	long ReLoadTime = 70;
+	long noTargetOutTime = 10;
 
 	long BShipRoundSecTime = 8;
 	long SShipRoundSecTime = 3;
 
 	CTime Curtimer;
-
+	long curTime;
 	VARIANT attack_x, attack_y;
 	//BShipStartAttackTime = CTime::GetCurrentTime();             //获取当前时间日期
 	//BShipTimer
@@ -1575,6 +1577,70 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 		//	}
 		//}
 
+		//-----------------------无目标判断-----------------
+		if (0 != curSmallShipNum || 0 != curBigShipNum)
+		{
+			noTargetTimerEnable = false;
+		}
+		if (0 == curSmallShipNum && 0 == curBigShipNum && false == noTargetTimerEnable)
+		{
+			//cout << ">>>当前无目标" << endl;
+			//cout << "召回所有舰载机" << endl;
+			//pThis->CALLBACKALLDRON();
+			//Sleep(800);
+			//pThis->m_pdm->KeyPress(113);
+			//Sleep(10 * 1000);
+			noTargetTimer = CTime::GetCurrentTime();
+			noTargetTime = noTargetTimer.GetTime();
+			noTargetTimerEnable = true;
+			cout << "当前无目标 开启无目标计时" << endl;
+			cout << endl;
+		}
+		if (true == noTargetTimerEnable)
+		{
+			Curtimer = CTime::GetCurrentTime();
+			curTime = Curtimer.GetTime();
+			cout << "无目标检测时间： " << curTime - noTargetTime <<endl;
+			cout << endl;
+			if (curTime - noTargetTime >= noTargetOutTime)
+			{
+				cout << "当前无目标！" << endl;
+				cout << "收回所有无人机！" << endl;
+				pThis->CALLBACKALLDRON();
+				Sleep(800);
+				pThis->m_pdm->KeyPress(113);
+				Sleep(3000);
+				cout << "退出线程！" << endl;
+				
+				pThis->m_script3Enable = false;
+				pThis->m_WrapDetectThreadEnable = false;
+				pThis->m_ShipNumCountThreadEnable = false;
+
+				pThis->m_lsb_msg.AddString(">>>关闭舰船数量检测线程");
+				pThis->m_lsb_msg.AddString(">>>关闭跃迁检测线程");
+				pThis->m_lsb_msg.AddString(">>>关闭脚本");
+				cout << endl;
+				pThis->CheckRun();
+				return 0;
+			}
+			Sleep(1000);
+		}
+
+		//-------------------------舰载机 就绪 判断------------------
+		//在有目标的时候才会判断
+		if ((onFire == false) && (0 != curSmallShipNum || 0 != curBigShipNum))
+		{
+			if (pThis->m_pdm->FindPic(0, 0, 1920, 1080, "DroneReady.bmp", "202020", 0.8, 0, &attack_x, &attack_y) != -1)
+			{
+				cout << "检测到无人机就绪 且存在敌人" << endl;
+				cout << "释放所有铁JJ" << endl;
+				cout << endl;
+				pThis->RELEASEALLDRON();
+				Sleep(1500);
+				pThis->m_pdm->KeyPress(113);
+			}
+		}
+
 
 		//---------------------跃迁检测---------------------------
 		if (pThis->m_IfWrapON == true)
@@ -1609,28 +1675,28 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 		{
 			BigShipLocked = false;
 			//船的数量增加 先环绕两次 再刷新 数量 以防 后续错误判断
-			for (int i = 0; i < 2; i++)
-			{
-				pThis->OnBnClickeRoundFirBShip();
-				Sleep(400);
-			}
-			curSmallShipNum = pThis->m_curSShipNum;
-			curBigShipNum = pThis->m_curBShipNum;
+			//for (int i = 0; i < 2; i++)
+			//{
+			//	pThis->OnBnClickeRoundFirBShip();
+			//	Sleep(400);
+			//}
+			//curSmallShipNum = pThis->m_curSShipNum;
+			//curBigShipNum = pThis->m_curBShipNum;
 
 		}
 		if (curSmallShipNum < pastSmallShipNum)
 		{
 			pThis->OnBnClickeRoundFirShip();
 			ifAttack = false;
-
 		}
 		if (curBigShipNum < pastBigShipNum)
 		{
-			cout << "<大船>减少 延时2秒" << endl;
+			cout << "<大船>减少 延时0秒" << endl;
+			cout << endl;
 			pThis->OnBnClickeRoundFirBShip();
 			ifAttack = false;
-			reLoadFlag = 0;
-			Sleep(2000);
+			//reLoadFlag = 0;
+			//Sleep(2000);
 		}
 
 		
@@ -1642,6 +1708,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			cout << "<攻击判断>" << endl;
 			cout << ">>>小船不为0 并且不在 开火" << endl;
 			cout << "环绕第一艘小船" << endl;
+			cout << endl;
 			pThis->OnBnClickeRoundFirShip();
 			ifAttack = true;
 
@@ -1665,6 +1732,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			cout << "<攻击判断>" << endl;
 			cout << ">>>小船为0,大船不为0，并且不在开火" << endl;
 			cout << "环绕第一艘大船" << endl;
+			cout << endl;
 			pThis->OnBnClickeRoundFirBShip();
 			ifAttack = true;
 
@@ -1712,6 +1780,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 					pThis->LockFirSShip();
 					Sleep(100);
 					cout << "攻击第一艘小船" << endl;
+					cout << endl;
 					pThis->OnBnClickeAttFirSShip();
 					//开启小船攻击计时
 					SShipStartAttackTimer = CTime::GetCurrentTime();
@@ -1739,6 +1808,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 					pThis->LockFirBShip();
 					Sleep(100);
 					cout << "攻击第一艘大船" << endl;
+					cout << endl;
 					pThis->OnBnClickeAttFirBShip();
 					Sleep(600);
 					//开启大船攻击计时
@@ -1764,6 +1834,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			cout << ">>>锁定所有小船" << endl;
 			pThis->OnBnClickeLockSmallShip();
 			cout << "延时2秒" << endl;
+			cout << endl;
 			Sleep(2000);
 			SmallShipLocked = true;
 			cout << endl;
@@ -1773,6 +1844,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 		{
 			cout << "<锁定判断>" << endl;
 			cout << ">>>锁定所有大船" << endl;
+			cout << endl;
 			pThis->OnBnClickeLockBigShip();
 			BigShipLocked = true;
 			cout << endl;
@@ -1803,6 +1875,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			{
 				
 				cout << "大船攻击超时 启动导弹" << endl;
+				cout << endl;
 				pThis->m_pdm->KeyPress(114);
 				Sleep(800);
 			}
@@ -1856,6 +1929,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 				pThis->LockFirSShip();
 				Sleep(100);
 				cout << "攻击第一艘小船" << endl;
+				cout << endl;
 				pThis->OnBnClickeAttFirSShip();
 				Sleep(100);
 			}
@@ -1887,7 +1961,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 				pThis->m_pdm->KeyPress(113);
 
 				//暂时不做判断
-				cout << "延时100s！" << endl;
+				cout << "延时！" << endl;
 				int time;
 				for (time = 0; time < ReLoadTime; time++)
 				{
@@ -1896,6 +1970,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 				}
 				//Sleep(100*1000);
 				cout << "释放所有铁骑！" << endl;
+				cout << endl;
 				pThis->RELEASEALLDRON();
 				Sleep(2000);
 				pThis->m_pdm->KeyPress(113);
@@ -1903,35 +1978,14 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			//Sleep();
 		}
 		
-		if (0 == curSmallShipNum && 0 == curBigShipNum)
-		{
-			cout << ">>>当前无目标" << endl;
-			cout << "召回所有舰载机" << endl;
-			pThis->CALLBACKALLDRON();
-			Sleep(800);
-			pThis->m_pdm->KeyPress(113);
-			Sleep(10*1000);
-		}
 
-		//-------------------------舰载机 就绪 判断------------------
-		//在有目标的时候才会判断
-		if ((onFire == false) && (0 != curSmallShipNum || 0 != curBigShipNum))
-		{
-			if (pThis->m_pdm->FindPic(0, 0, 1920, 1080, "DroneReady.bmp", "202020", 0.8, 0, &attack_x, &attack_y) != -1)
-			{
-				cout << "检测到无人机就绪 且存在敌人" << endl;
-				cout << "释放所有铁JJ" << endl;
-				pThis->RELEASEALLDRON();
-				Sleep(800);
-				pThis->m_pdm->KeyPress(113);
-			}
-		}
 
 		//计数
 		pastBigShipNum = curBigShipNum;
 		pastSmallShipNum = curSmallShipNum;
 	}
 	cout << "脚本3已退出" << endl;
+	cout << endl;
 	return 0;
 }
 
