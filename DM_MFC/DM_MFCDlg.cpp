@@ -6,6 +6,7 @@
 #include "DM_MFC.h"
 #include "DM_MFCDlg.h"
 #include "afxdialogex.h"
+#include "voice.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -151,6 +152,7 @@ BEGIN_MESSAGE_MAP(CDM_MFCDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON23, &CDM_MFCDlg::CALLBACKALLDRON)
 	ON_BN_CLICKED(IDC_BUTTON24, &CDM_MFCDlg::RELEASEALLDRON)
 	ON_BN_CLICKED(IDC_BUTTON25, &CDM_MFCDlg::StartWrapDtectThread)
+	ON_BN_CLICKED(IDC_BUTTON26, &CDM_MFCDlg::NoTargetVoice)
 END_MESSAGE_MAP()
 
 
@@ -1492,6 +1494,26 @@ void CDM_MFCDlg::OnBnClickeRoundFirShip()
 		m_scanPoint_x.intVal - 10, m_scanPoint_y.intVal, m_scanPoint_x.intVal + 145, 1080, 16,70,0);
 }
 
+UINT VOICETHREAD(LPVOID pParam)
+{
+	CDM_MFCDlg * pThis = (CDM_MFCDlg *)pParam;
+	//int voice = pThis->m_voiceFlag;
+
+	switch (pThis->m_voiceFlag)
+	{
+	case 0:
+		break;
+	case NOTARGETVOICEFLAG:
+		PlayVoiceMultiTimes(NOTARGETVOICE);
+		break;
+	default:
+		break;
+	}
+
+	pThis->m_voiceFlag = 0;
+	return 0;
+}
+
 
 UINT SCRIPT3THREAD(LPVOID pParam)
 {
@@ -1511,7 +1533,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	int reLoadFlag = 0;
 
 	long BShipAttOutTime = 8;
-	long SShipAttOutTime = 8;
+	long SShipAttOutTime = 10;
 	CTime BShipStartAttackTimer;
 	long BShipAttackTime;
 	//初始化 时间 防止发生异常
@@ -1621,6 +1643,11 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 				pThis->m_lsb_msg.AddString(">>>关闭脚本");
 				cout << endl;
 				pThis->CheckRun();
+				//PlayVoiceMultiTimes(NOTARGETVOICE);
+
+				pThis->m_voiceFlag = NOTARGETVOICEFLAG;
+				AfxBeginThread(VOICETHREAD, pThis, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+
 				return 0;
 			}
 			Sleep(1000);
@@ -1967,6 +1994,17 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 				{
 					Sleep(1000);
 					cout << "Waiting: " <<time<<endl;
+					if (pThis->m_pdm->FindPic(0, 0, 1920, 1080, "DroneReady.bmp", "202020", 0.8, 0, &attack_x, &attack_y) != -1)
+					{
+						cout << "检测到无人机就绪 且存在敌人" << endl;
+						Sleep(5000);
+						cout << "释放所有铁JJ" << endl;
+						cout << endl;
+						pThis->RELEASEALLDRON();
+						Sleep(1500);
+						pThis->m_pdm->KeyPress(113);
+						break;
+					}
 				}
 				//Sleep(100*1000);
 				cout << "释放所有铁骑！" << endl;
@@ -2153,4 +2191,11 @@ void CDM_MFCDlg::StartWrapDtectThread()
 		m_WrapDetectThreadEnable = false;
 		cout << "跃迁检测线程关闭" << endl;
 	}
+}
+
+
+void CDM_MFCDlg::NoTargetVoice()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	PlayVoiceMultiTimes(NOTARGETVOICE);
 }

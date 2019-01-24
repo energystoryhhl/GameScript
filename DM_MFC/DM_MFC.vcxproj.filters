@@ -45,6 +45,9 @@
     <ClInclude Include="dm.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="voice.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DM_MFC.cpp">
@@ -57,6 +60,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="dm.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="voice.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
