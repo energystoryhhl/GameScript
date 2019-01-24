@@ -1506,6 +1506,15 @@ UINT VOICETHREAD(LPVOID pParam)
 	case NOTARGETVOICEFLAG:
 		PlayVoiceMultiTimes(NOTARGETVOICE);
 		break;
+
+	case SCRIPTSTARTFLAG:
+		PlayVoiceMultiTimes(SCRIPTSTARTVOICE,2);
+		break;
+
+	case NO_KILL_TIME_OUT_FLAG:
+		PlayVoiceMultiTimes(NO_KILL_TIME_OUT_VOICE, 10);
+		break;
+
 	default:
 		break;
 	}
@@ -1534,6 +1543,8 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 
 	long BShipAttOutTime = 8;
 	long SShipAttOutTime = 10;
+	long noKillOutTime = 30;
+
 	CTime BShipStartAttackTimer;
 	long BShipAttackTime;
 	//初始化 时间 防止发生异常
@@ -1544,12 +1555,18 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	//初始化 时间 防止发生异常
 	SShipStartAttackTimer = CTime::GetCurrentTime();
 	SShipAttackTime = SShipStartAttackTimer.GetTime();
-	//
+	//无目标检测 时间
 	CTime noTargetTimer;
 	long noTargetTime;
 	bool noTargetTimerEnable = false;
 	noTargetTimer = CTime::GetCurrentTime();
 	noTargetTime = noTargetTimer.GetTime();
+
+	//船减少 计时
+	CTime shipReduceTimer;
+	long shipReduceTime;
+	shipReduceTimer = CTime::GetCurrentTime();
+	shipReduceTime = shipReduceTimer.GetTime();
 
 	CTime ReLoadTimer;
 	long ReLoadTime = 70;
@@ -1571,7 +1588,16 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	//
 	CDM_MFCDlg * pThis = (CDM_MFCDlg *)pParam;
 	cout << "脚本3已经启动" << endl;
-	Sleep(2000);
+	
+
+	//---------------启动感应增强-------------------
+	cout << "按下 F4 启动感应增强" << endl;
+	pThis->m_pdm->KeyPress(115);
+
+	pThis->m_voiceFlag = SCRIPTSTARTFLAG;
+	AfxBeginThread(VOICETHREAD, pThis, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+	Sleep(2000);			//延时俩秒 等待 船计数线程 启动 获得 当前船数量
+
 	while (pThis->m_script3Enable)
 	{
 		//获取当前船只数量
@@ -1715,6 +1741,14 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 		{
 			pThis->OnBnClickeRoundFirShip();
 			ifAttack = false;
+
+			//获取 船减少 当前时间
+			Curtimer = CTime::GetCurrentTime();
+			curTime = Curtimer.GetTime();
+			long passTime = curTime - shipReduceTime;
+			cout << "一艘船击破时间： " << passTime << endl << endl;
+			shipReduceTime = curTime;
+
 		}
 		if (curBigShipNum < pastBigShipNum)
 		{
@@ -1724,7 +1758,24 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			ifAttack = false;
 			//reLoadFlag = 0;
 			//Sleep(2000);
+
+			//获取 船减少 当前时间
+			Curtimer = CTime::GetCurrentTime();
+			curTime = Curtimer.GetTime();
+			long passTime = curTime - shipReduceTime;
+			cout << "一艘船击破时间： " << passTime << endl << endl;
+			shipReduceTime = curTime;
 		}
+			//-----------------------如果 没有船被 击破 且 时间过长 ---------------
+		Curtimer = CTime::GetCurrentTime();
+		curTime = Curtimer.GetTime();
+		long passTime = curTime - shipReduceTime;
+		if (passTime >= noKillOutTime)
+		{
+			pThis->m_voiceFlag = NO_KILL_TIME_OUT_FLAG;
+			AfxBeginThread(VOICETHREAD, pThis, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+		}
+
 
 		
 
