@@ -125,7 +125,7 @@ int DMFindListLock(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int dela
 		//Sleep(500);
 		x.intVal -= bias;
 		cout << "锁定 "<<x.intVal << " " << y.intVal << " " << i << endl;
-		DMLock(dm, x, y, delayTime);
+		DMLock(dm, x , y, delayTime);
 
 #ifdef DM_DEBUG
 		dm.FoobarClose(foohandle);
@@ -159,7 +159,7 @@ int DMFindListUnLock(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int de
 
 int DMLock(Cdmsoft& dm, VARIANT x, VARIANT y,unsigned int delayTime)
 {
-	dm.MoveTo(x.intVal, y.intVal);
+	dm.MoveTo(x.intVal + XRAND, y.intVal + 5 + YRAND);
 	Sleep(delayTime);
 	dm.KeyDown(17);
 	Sleep(delayTime);
@@ -256,7 +256,7 @@ int DMFindListAttack(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int de
 			long foohandle = dm.CreateFoobarRect(0, x.intVal , y.intVal - DM_DEBUG_BIAS_Y, 20, 16);
 #endif
 			x.intVal -= bias; //向左偏移防止 发生 说明 挡住 其他的
-			dm.MoveTo(x.intVal, y.intVal);
+			dm.MoveTo(x.intVal + XRAND, y.intVal + 5 + YRAND);
 			Sleep(delayTime);
 			dm.LeftClick();
 			Sleep(delayTime);
@@ -292,7 +292,7 @@ int DMFindListAttackBig(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int
 			long foohandle = dm.CreateFoobarRect(0, x.intVal, y.intVal - DM_DEBUG_BIAS_Y, 20, 16);
 #endif
 			x.intVal -= bias; //向左偏移防止 发生 说明 挡住 其他的
-			dm.MoveTo(x.intVal, y.intVal);
+			dm.MoveTo(x.intVal + XRAND, y.intVal + 5 + YRAND);
 			Sleep(delayTime);
 			dm.LeftClick();
 			Sleep(delayTime);
@@ -327,7 +327,7 @@ int DMFindListRound(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int del
 			
 			dm.KeyDownChar("w");
 			Sleep(delayTime);
-			dm.MoveTo(x.intVal, y.intVal);
+			dm.MoveTo(x.intVal + XRAND, y.intVal + 5 + YRAND);
 			Sleep(delayTime);
 			dm.LeftClick();
 			Sleep(delayTime);
