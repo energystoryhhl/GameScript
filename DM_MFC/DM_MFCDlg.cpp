@@ -1513,7 +1513,7 @@ UINT VOICETHREAD(LPVOID pParam)
 		break;
 
 	case NO_KILL_TIME_OUT_FLAG:
-		PlayVoiceMultiTimes(NO_KILL_TIME_OUT_VOICE, 10);
+		PlayVoiceMultiTimes(NO_KILL_TIME_OUT_VOICE, 2);
 		break;
 
 	case WRAP_STOP_VOICE_FLAG:
@@ -1546,9 +1546,9 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	bool onFire = false;
 	int reLoadFlag = 0;
 
-	long BShipAttOutTime = 8;
-	long SShipAttOutTime = 10;
-	long noKillOutTime = 30;
+	long BShipAttOutTime = 12;
+	long SShipAttOutTime = 13;
+	long noKillOutTime = 50;
 
 	CTime BShipStartAttackTimer;
 	long BShipAttackTime;
@@ -1723,6 +1723,13 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 		{
 			SmallShipLocked = false;
 			//船的数量增加 先环绕两次 再刷新 数量 以防 后续错误判断
+
+			Curtimer = CTime::GetCurrentTime();
+			curTime = Curtimer.GetTime();
+			long passTime = curTime - shipReduceTime;
+			cout << "//////////////////////////----------一艘船击破时间： " << passTime << endl << endl;
+
+			shipReduceTime = curTime;
 			for (int i = 0; i < 2; i++)
 			{
 				pThis->OnBnClickeRoundFirShip();
@@ -1753,7 +1760,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			Curtimer = CTime::GetCurrentTime();
 			curTime = Curtimer.GetTime();
 			long passTime = curTime - shipReduceTime;
-			cout << "一艘船击破时间： " << passTime << endl << endl;
+			cout << "//////////////////////////----------一艘船击破时间： " << passTime << endl << endl;
 			shipReduceTime = curTime;
 
 		}
@@ -1770,7 +1777,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			Curtimer = CTime::GetCurrentTime();
 			curTime = Curtimer.GetTime();
 			long passTime = curTime - shipReduceTime;
-			cout << "一艘船击破时间： " << passTime << endl << endl;
+			cout << "//////////////////////////----------一艘船击破时间： " << passTime << endl << endl;
 			shipReduceTime = curTime;
 		}
 			//-----------------------如果 没有船被 击破 且 时间过长 ---------------
@@ -2055,12 +2062,16 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 					if (pThis->m_pdm->FindPic(0, 0, 1920, 1080, "DroneReady.bmp", "202020", 0.8, 0, &attack_x, &attack_y) != -1)
 					{
 						cout << "检测到无人机就绪 且存在敌人" << endl;
-						Sleep(5000);
+						Sleep(8000);
 						cout << "释放所有铁JJ" << endl;
 						cout << endl;
 						pThis->RELEASEALLDRON();
 						Sleep(1500);
 						pThis->m_pdm->KeyPress(113);
+
+						Curtimer = CTime::GetCurrentTime();
+						curTime = Curtimer.GetTime();
+						shipReduceTime = curTime;
 						break;
 					}
 				}
