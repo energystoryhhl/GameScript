@@ -1505,7 +1505,7 @@ UINT VOICETHREAD(LPVOID pParam)
 	case 0:
 		break;
 	case NOTARGETVOICEFLAG:
-		PlayVoiceMultiTimes(NOTARGETVOICE);
+		PlayVoiceMultiTimes(NOTARGETVOICE,2);
 		break;
 
 	case SCRIPTSTARTFLAG:
