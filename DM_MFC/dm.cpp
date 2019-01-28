@@ -296,7 +296,7 @@ int DMFindListMissle(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int de
 			Sleep(delayTime);
 			dm.LeftClick();
 			Sleep(delayTime);
-			dm.KeyPress(113);
+			dm.KeyPress(114);
 
 #ifdef DM_DEBUG
 			dm.FoobarClose(foohandle);

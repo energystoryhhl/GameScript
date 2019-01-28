@@ -1546,7 +1546,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	bool onFire = false;
 	int reLoadFlag = 0;
 
-	long BShipAttOutTime = 12;
+	long BShipAttOutTime = 10;
 	long SShipAttOutTime = 13;
 	long noKillOutTime = 50;
 
@@ -1989,6 +1989,9 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 				cout << endl;
 				pThis->OnBnClickeAttFirSShip();
 				Sleep(100);
+				pThis->OnBnClickeLockSmallShip();
+				Sleep(150);
+				SShipAttackTime = ctime;
 			}
 			/*
 			VARIANT x_pic, y_pic;
@@ -2017,23 +2020,31 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			cout << "pass time: " << passtime << endl;;
 			Sleep(500);
 			//system("cls");
-#ifdef ROUND_TEST
-			if ((passtime == BShipRoundSecTime))
-			{
-				cout << "//================！！！环绕判定！！！" << endl;
-				cout << "环绕第二艘大船！" << endl;
-
-				pThis->OnBnClickeRoundSecBShip();
-			}
-#endif
+//#ifdef ROUND_TEST
+//			if ((passtime == BShipRoundSecTime) || (passtime == BShipRoundSecTime + 1))
+//			{
+//				cout << "//================！！！环绕判定！！！" << endl;
+//				cout << "环绕第二艘大船！" << endl;
+//
+//				pThis->OnBnClickeRoundSecBShip();
+//				Sleep(800);
+//			}
+//#endif
 			if ((passtime >= BShipAttOutTime) )
 			{
 				
 				cout << "大船攻击超时 启动导弹" << endl;
 				//攻击第一个大船
-				DMFindListAttackBig(*pThis->m_pdm, pThis->m_scanPoint_x, pThis->m_scanPoint_y, "科波斯|黑暗", 80,
+				DMFindListMissle(*pThis->m_pdm, pThis->m_scanPoint_x, pThis->m_scanPoint_y, "科波斯|黑暗", 80,
 					pThis->m_scanPoint_x.intVal - 10, pThis->m_scanPoint_y.intVal, pThis->m_scanPoint_x.intVal + 145, 1080, 16);
-				Sleep(800);
+				
+#ifdef ROUND_TEST
+				if ( (passtime >= BShipRoundSecTime) && (passtime <= BShipRoundSecTime + 4))
+				{
+					pThis->OnBnClickeRoundSecBShip();
+					Sleep(800);
+				}
+#endif
 			}
 			/*	
 			VARIANT x_pic, y_pic;
