@@ -80,6 +80,10 @@ int DMFindListAttack(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int de
 //大船！找列表 并且默认攻击第一个
 //
 int DMFindListAttackBig(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = CLICKBIAS, int  attackObj = 0);
+
+//发射导弹!找列表 并且默认攻击第一个
+//
+int DMFindListMissle(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = CLICKBIAS, int attackObj = 0);
 //找列表并且默认环绕第二个
 //
 int DMFindListRound(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias = CLICKBIAS, int attackObj = 1);

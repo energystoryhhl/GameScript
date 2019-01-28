@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-
+#define ROUND_TEST
 
 void getFolderDayFile(CString pathStr, CStringArray& arrStrFile)
 {
@@ -1577,8 +1577,8 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	long ReLoadTime = 70;
 	long noTargetOutTime = 10;
 
-	long BShipRoundSecTime = 8;
-	long SShipRoundSecTime = 3;
+	long BShipRoundSecTime = 12;
+	long SShipRoundSecTime = 5;
 
 	CTime Curtimer;
 	long curTime;
@@ -1760,8 +1760,16 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			Curtimer = CTime::GetCurrentTime();
 			curTime = Curtimer.GetTime();
 			long passTime = curTime - shipReduceTime;
-			cout << "//////////////////////////----------一艘船击破时间： " << passTime << endl << endl;
+			cout << "//////////////////////////----------一艘小船击破时间： " << passTime << endl << endl;
 			shipReduceTime = curTime;
+			if (passTime >= 14)
+			{
+				SShipRoundSecTime = 9;
+			}
+			else 
+			{
+				SShipRoundSecTime = 4;
+			}
 
 		}
 		if (curBigShipNum < pastBigShipNum)
@@ -1942,51 +1950,8 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			cout << endl;
 		}
 
-		//------------大船攻击计时判断--------------
-		if ((curSmallShipNum == 0) && (ifAttack == true) && (curBigShipNum != 0))
-		{
-			Curtimer = CTime::GetCurrentTime();
-			long ctime = Curtimer.GetTime();
-			long passtime;
-			passtime = (ctime - BShipAttackTime);
-			//获取时间
-			//等待消灭大船
-			cout << "pass time: " << passtime << endl;;
-			Sleep(500);
-			//system("cls");
-#ifdef ROUND_TEST
-			if ((passtime == BShipRoundSecTime))
-			{
-				cout << "//================！！！环绕判定！！！" << endl;
-				cout << "环绕第二艘大船！" << endl;
-
-				pThis->OnBnClickeRoundSecBShip();
-			}
-#endif
-			if ((passtime >= BShipAttOutTime) )
-			{
-				
-				cout << "大船攻击超时 启动导弹" << endl;
-				cout << endl;
-				pThis->m_pdm->KeyPress(114);
-				Sleep(800);
-			}
-			/*	
-			VARIANT x_pic, y_pic;
-			if (pThis->m_pdm->FindPic(0, 0, 1920, 1080, "missleEmpty.bmp", "202020", 0.95, 0, &x_pic, &x_pic) != -1) //"F1_2.bmp"
-			{
-				ifMissleEmpty = true;
-				cout << "/---------MISSSLE EMPTY------------/" << endl;
-			}
-			if (pThis->m_pdm->FindPic(0, 0, 1920, 1080, "F1_2.bmp", "202020", 0.95, 0, &x_pic, &x_pic) != -1) //"F1_2.bmp"
-			{
-				//ifMissleEmpty = true;
-				cout << "/---------NOT ON FIRE!------------/" << endl;
-			}
-			*/
-		}
 		//------------小船攻击计时判断--------------
-		if ((curSmallShipNum != 0) && (ifAttack == true) )
+		if ((curSmallShipNum != 0) && (ifAttack == true))
 		{
 			Curtimer = CTime::GetCurrentTime();
 			long ctime = Curtimer.GetTime();
@@ -2039,6 +2004,53 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			}
 			*/
 		}
+
+		//------------大船攻击计时判断--------------
+		if ((curSmallShipNum == 0) && (ifAttack == true) && (curBigShipNum != 0))
+		{
+			Curtimer = CTime::GetCurrentTime();
+			long ctime = Curtimer.GetTime();
+			long passtime;
+			passtime = (ctime - BShipAttackTime);
+			//获取时间
+			//等待消灭大船
+			cout << "pass time: " << passtime << endl;;
+			Sleep(500);
+			//system("cls");
+#ifdef ROUND_TEST
+			if ((passtime == BShipRoundSecTime))
+			{
+				cout << "//================！！！环绕判定！！！" << endl;
+				cout << "环绕第二艘大船！" << endl;
+
+				pThis->OnBnClickeRoundSecBShip();
+			}
+#endif
+			if ((passtime >= BShipAttOutTime) )
+			{
+				
+				cout << "大船攻击超时 启动导弹" << endl;
+				//攻击第一个大船
+				DMFindListAttackBig(*pThis->m_pdm, pThis->m_scanPoint_x, pThis->m_scanPoint_y, "科波斯|黑暗", 80,
+					pThis->m_scanPoint_x.intVal - 10, pThis->m_scanPoint_y.intVal, pThis->m_scanPoint_x.intVal + 145, 1080, 16);
+				Sleep(800);
+			}
+			/*	
+			VARIANT x_pic, y_pic;
+			if (pThis->m_pdm->FindPic(0, 0, 1920, 1080, "missleEmpty.bmp", "202020", 0.95, 0, &x_pic, &x_pic) != -1) //"F1_2.bmp"
+			{
+				ifMissleEmpty = true;
+				cout << "/---------MISSSLE EMPTY------------/" << endl;
+			}
+			if (pThis->m_pdm->FindPic(0, 0, 1920, 1080, "F1_2.bmp", "202020", 0.95, 0, &x_pic, &x_pic) != -1) //"F1_2.bmp"
+			{
+				//ifMissleEmpty = true;
+				cout << "/---------NOT ON FIRE!------------/" << endl;
+			}
+			*/
+		}
+
+
 		//----------------导弹数量检测-----------------------
 		//
 		if (DMFindPicRow(*pThis->m_pdm, attack_x, attack_y, "missleEmpty.bmp", 20, 0, 0, 1920, 1080) >= 2)

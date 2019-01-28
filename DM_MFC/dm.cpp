@@ -273,6 +273,43 @@ int DMFindListAttack(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int de
 	return i;
 }
 
+int DMFindListMissle(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias, int attackObj)
+{
+	//int tmp_y = y_overvirw.intVal;
+	//所有可用小行星带
+	//vector<overViewElement> vecOverviewElement;
+	int i = 0;
+	while (dm.FindStrFast(x1, y1, x2, y2, FindString, "c3c3c3-606060", 0.85, &x, &y) != -1)
+	{
+
+
+		//cout << "环绕第一个小船" << endl;
+		//DMPressClk(dm, x, y, "w", delayTime);		//环绕第一个
+		if (i == attackObj)
+		{
+			cout << "攻击 " << x.intVal << " " << y.intVal << "第 " << i << " 个" << endl;
+#ifdef DM_DEBUG
+			long foohandle = dm.CreateFoobarRect(0, x.intVal, y.intVal - DM_DEBUG_BIAS_Y, 20, 16);
+#endif
+			x.intVal -= bias; //向左偏移防止 发生 说明 挡住 其他的
+			dm.MoveTo(x.intVal + XRAND, y.intVal + 5 + YRAND);
+			Sleep(delayTime);
+			dm.LeftClick();
+			Sleep(delayTime);
+			dm.KeyPress(113);
+
+#ifdef DM_DEBUG
+			dm.FoobarClose(foohandle);
+#endif
+			break;
+		}
+		y1 = y.intVal + offset;
+		i++;
+	}
+	return i;
+}
+
+
 int DMFindListAttackBig(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias, int attackObj)
 {
 	//int tmp_y = y_overvirw.intVal;
