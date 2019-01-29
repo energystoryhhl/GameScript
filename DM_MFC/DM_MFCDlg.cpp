@@ -1546,8 +1546,8 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	bool onFire = false;
 	int reLoadFlag = 0;
 
-	long BShipAttOutTime = 10;
-	long SShipAttOutTime = 13;
+	long BShipAttOutTime = 8;
+	long SShipAttOutTime = 20;
 	long noKillOutTime = 50;
 
 	CTime BShipStartAttackTimer;
@@ -1577,9 +1577,10 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 	long ReLoadTime = 70;
 	long noTargetOutTime = 10;
 
-	long BShipRoundSecTime = 12;
+	long BShipRoundSecTime = 8;
 	long SShipRoundSecTime = 5;
 
+	long smallPassTime = 0;
 	CTime Curtimer;
 	long curTime;
 	VARIANT attack_x, attack_y;
@@ -1764,11 +1765,11 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			shipReduceTime = curTime;
 			if (passTime >= 14)
 			{
-				SShipRoundSecTime = 9;
+				SShipRoundSecTime = 7;
 			}
-			else 
+			else
 			{
-				SShipRoundSecTime = 4;
+				SShipRoundSecTime = 1;
 			}
 
 		}
@@ -1963,7 +1964,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 			Sleep(400);
 			//system("cls");
 #ifdef ROUND_TEST
-			if ((passtime == SShipRoundSecTime))
+			if ((passtime >= SShipRoundSecTime) && (passtime <= SShipRoundSecTime + 4))
 			{
 				cout << "//================！！！环绕判定！！！" << endl;
 				if (curSmallShipNum >= 2)
@@ -1976,6 +1977,7 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 					cout << "环绕第1艘大船！" << endl;
 					pThis->OnBnClickeRoundFirBShip();
 				}
+				Sleep(200);
 			}
 #endif
 			if ((passtime >= SShipAttOutTime))
@@ -1989,6 +1991,10 @@ UINT SCRIPT3THREAD(LPVOID pParam)
 				cout << endl;
 				pThis->OnBnClickeAttFirSShip();
 				Sleep(100);
+				
+			}
+			if (passtime >= SShipAttOutTime + 4)
+			{
 				pThis->OnBnClickeLockSmallShip();
 				Sleep(150);
 				SShipAttackTime = ctime;
