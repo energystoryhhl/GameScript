@@ -84,7 +84,11 @@ private:
 	bool m_WrapDetectThreadEnable;
 	bool m_IfWrapON;
 	int  m_voiceFlag;
+	int SCREEN_WIDTH;
+	int SCREEN_HEIGHT;
+	bool m_ScriptAutoEnable;
 
+	friend UINT SCRIPTAUTO(LPVOID pParam);
 	friend UINT VOICETHREAD(LPVOID pParam);
 	friend UINT ShipCoutThread(LPVOID pParam);
 	friend UINT SCRIPT3THREAD(LPVOID pParam);
@@ -133,4 +137,5 @@ public:
 	CButton m_btn_script3;
 	afx_msg void StartWrapDtectThread();
 	afx_msg void NoTargetVoice();
+	afx_msg void AUTO();
 };

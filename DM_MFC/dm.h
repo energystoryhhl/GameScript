@@ -14,8 +14,11 @@ using namespace std;
 #define XRANDONBIASVAL		10
 #define YRANDVAL			10
 #define YRANDBIASVAL		5
+#define SLEEPRANDSVAL		100
+
 #define XRAND			(rand()%XRANDONVAL - XRANDONBIASVAL)
 #define YRAND			(rand()%YRANDVAL   - YRANDBIASVAL)
+#define SLEEPRANDS		(rand()%SLEEPRANDSVAL)
 //#define ROUND_TEST
 
 
@@ -40,6 +43,10 @@ struct OverViewElement {
 Cdmsoft * DMInstan();
 
 int DMFindList(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, vector<OverViewElement> &v);
+
+//按下 key 然后点击 坐标位置 然后松开key 默认 左击
+//
+void DMKeyDownClick(Cdmsoft &dm, VARIANT x, VARIANT y, char* key, int mouse = 0, int biasx = 20, int biasy = 0);
 
 //锁定单个
 //

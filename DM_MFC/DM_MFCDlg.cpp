@@ -153,6 +153,7 @@ BEGIN_MESSAGE_MAP(CDM_MFCDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON24, &CDM_MFCDlg::RELEASEALLDRON)
 	ON_BN_CLICKED(IDC_BUTTON25, &CDM_MFCDlg::StartWrapDtectThread)
 	ON_BN_CLICKED(IDC_BUTTON26, &CDM_MFCDlg::NoTargetVoice)
+	ON_BN_CLICKED(IDC_BUTTON27, &CDM_MFCDlg::AUTO)
 END_MESSAGE_MAP()
 
 
@@ -968,6 +969,10 @@ void CDM_MFCDlg::InitializeControls(void)
 
 	m_pdm = NULL;
 
+	SCREEN_HEIGHT = 1080;
+	SCREEN_WIDTH = 1920;
+
+
 	CheckRun();
 	//m_cbb_mode.inser
 }
@@ -1001,7 +1006,7 @@ void CDM_MFCDlg::OnBnClickedButtonInit()
 			return;
 		}
 	}
-		
+	m_lsb_msg.ResetContent();
 	//
 	long hwnd = m_pdm->FindWindow("", handleName3.GetBuffer(0)); //
 	long hwnd2 = m_pdmCounter->FindWindow("", handleName3.GetBuffer(0));
@@ -1045,7 +1050,8 @@ void CDM_MFCDlg::OnBnClickedButtonInit()
 	}
 	else
 	{ 
-		m_lsb_msg.InsertString(m_lsb_msg.GetCount(), "载入字库成功");
+		m_lsb_msg.AddString("载入字库成功！");
+		//m_lsb_msg.InsertString(m_lsb_msg.GetCount(), "载入字库成功");
 	}
 		
 
@@ -1116,14 +1122,14 @@ void CDM_MFCDlg::OnBnClickeFindScanPoint()
 	// TODO: 在此添加控件通知处理程序代码
 	if (m_pdm == NULL )
 	{
-		m_lsb_msg.InsertString(m_lsb_msg.GetCount(), "DM没有初始化");
+		m_lsb_msg.AddString("DM没有初始化");
 		return;
 	}
 	VARIANT x, y, tmp_x, tmp_y;
 	if (m_pdm->FindStrFast(0, 0, 1920, 1080, "名字", "c3c3c3-606060", 0.85, &x, &y) != -1)
 	{
 		cout << ">>>查找起始点 已经重定位" << endl;
-		m_lsb_msg.InsertString(m_lsb_msg.GetCount(), "名字已经定位 扫描起始点已定位");
+		m_lsb_msg.AddString( "名字已经定位 扫描起始点已定位");
 		tmp_x = x;
 		tmp_y = y;
 		m_scanPoint_x = x;
@@ -2328,4 +2334,101 @@ void CDM_MFCDlg::NoTargetVoice()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	PlayVoiceMultiTimes(NOTARGETVOICE);
+}
+
+
+UINT SCRIPTAUTO(LPVOID pParam)
+{
+	CDM_MFCDlg * pThis = (CDM_MFCDlg *)pParam;
+	VARIANT x, y;
+	char * wrapDecteStr = "跃迁";
+	char * findStrcolor = "c3c3c3-606060";
+	double warpDecteSim = 0.75;
+	int warpDelayTime = 5000;
+	char * autoPilotPointPic = "DestPic.bmp";
+	char * autoPilotStaionPic = "DestStationPic.bmp";
+	char * autoPilotInStaionPic = "LeaveStaion.bmp";
+	char * autoPilotPointPicColor = "101010";
+	double autoPilotPointPicSim = 0.85;
+
+
+	while (true == pThis->m_ScriptAutoEnable)
+	{
+		pThis->m_lsb_msg.ResetContent();
+
+		//-------------正在跃迁-----------
+		if (pThis->m_pdm->FindStrFast(0, 0, pThis->SCREEN_WIDTH, pThis->SCREEN_HEIGHT,
+			wrapDecteStr, findStrcolor, warpDecteSim, &x, &y) != -1)
+		{
+			pThis->m_lsb_msg.AddString("已在跃迁中 延时 ");
+			Sleep(warpDelayTime);
+		}
+		else
+		{
+			//-----------------不在跃迁中-------------------
+			if ((pThis->m_pdm->FindPic(0, 0, pThis->SCREEN_WIDTH, pThis->SCREEN_HEIGHT, autoPilotPointPic, autoPilotPointPicColor, autoPilotPointPicSim, 0, &x, &y) != -1) || 
+				(pThis->m_pdm->FindPic(0, 0, pThis->SCREEN_WIDTH, pThis->SCREEN_HEIGHT, autoPilotStaionPic, autoPilotPointPicColor, autoPilotPointPicSim, 0, &x, &y) != -1))
+			{
+				pThis->m_lsb_msg.AddString("找到下一坐标点了 进行跃迁 ");
+				cout << x.intVal << "  " << y.intVal << endl;
+				pThis->m_pdm->MoveTo(x.intVal + 20 +XRAND, y.intVal + 7 + YRAND);
+				//pThis->m_pdm->MoveTo(1570, 464);
+				Sleep(200 + SLEEPRANDS );
+				pThis->m_pdm->LeftClick();
+				Sleep(200 + SLEEPRANDS);
+				pThis->m_pdm->KeyPressChar("d");
+				Sleep(200 + SLEEPRANDS);
+				//DMKeyDownClick(*pThis->m_pdm, x, y, "d");
+				Sleep(1000);
+			}
+			else 
+			{
+				if (pThis->m_pdm->FindPic(0, 0, pThis->SCREEN_WIDTH, pThis->SCREEN_HEIGHT, autoPilotInStaionPic, autoPilotPointPicColor, autoPilotPointPicSim, 0, &x, &y) != -1)
+				{
+					pThis->m_lsb_msg.AddString("已经到达目的地");
+					
+				}
+				else
+				{
+					pThis->m_lsb_msg.AddString("警告！ 没有找到 跃迁目标！ ");
+					//Sleep(1000);
+				}
+				Sleep(1000);
+			}
+
+
+
+		}
+
+
+
+
+		//pThis->m_pdm->FindPic()
+	}
+
+	return 0;	
+}
+
+
+void CDM_MFCDlg::AUTO()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	if (m_pdm == NULL)
+	{
+		//m_lsb_msg.AddString("!!!DM对象未创建！");
+		m_lsb_msg.AddString("初始化");
+		//return;
+		this->OnBnClickedButtonInit();
+	}
+
+	//重新定位 名字
+	this->OnBnClickeFindScanPoint();
+
+	//
+	m_ScriptAutoEnable = true;
+
+	AfxBeginThread(SCRIPTAUTO, this, THREAD_PRIORITY_NORMAL, 0, 0, NULL);
+
+
+
 }

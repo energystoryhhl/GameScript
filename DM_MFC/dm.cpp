@@ -137,6 +137,21 @@ int DMFindListLock(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int dela
 	return i;
 }
 
+void DMKeyDownClick(Cdmsoft &dm, VARIANT x, VARIANT y,char* key,int mouse,int biasx,int biasy)
+{
+	dm.MoveTo(x.intVal + 50, y.intVal );
+	Sleep(100 + SLEEPRANDS);
+	dm.KeyDownChar(key);
+	Sleep(100 + SLEEPRANDS);
+	//if (1 == mouse)
+	//	dm.RightClick();
+	//else
+		dm.LeftClick();
+	Sleep(100 + SLEEPRANDS);
+	dm.KeyUpChar(key);
+	Sleep(100 + SLEEPRANDS);
+}
+
 int DMFindListUnLock(Cdmsoft &dm, VARIANT x, VARIANT y, char *FindString, int delayTime, int x1, int y1, int x2, int y2, int offset, int bias)
 {
 	//int tmp_y = y_overvirw.intVal;
